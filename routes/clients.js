@@ -113,7 +113,16 @@ router.post('/', authenticate, requireSuperAdmin, async (req, res) => {
 // Update client (super admin only)
 router.put('/:id', authenticate, requireSuperAdmin, async (req, res) => {
   try {
-    const { companyName, contactEmail, planType, status, monthlyCost, projectIds } = req.body;
+    const {
+      companyName,
+      contactEmail,
+      planType,
+      status,
+      monthlyCost,
+      projectIds,
+      serverConfig,
+      databaseConfig
+    } = req.body;
 
     const client = await Client.findById(req.params.id);
     if (!client) {
@@ -127,6 +136,12 @@ router.put('/:id', authenticate, requireSuperAdmin, async (req, res) => {
     if (status) client.status = status;
     if (monthlyCost !== undefined) client.monthlyCost = monthlyCost;
     if (projectIds !== undefined) client.projectIds = projectIds;
+    if (serverConfig !== undefined) {
+      client.serverConfig = { ...client.serverConfig.toObject(), ...serverConfig };
+    }
+    if (databaseConfig !== undefined) {
+      client.databaseConfig = { ...client.databaseConfig.toObject(), ...databaseConfig };
+    }
 
     await client.save();
     await client.populate('userId', 'name email');
