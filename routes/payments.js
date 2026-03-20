@@ -245,6 +245,9 @@ router.get('/cashfree/order-status/:orderId', authenticate, async (req, res) => 
       if (paymentDoc) {
         paymentDoc.status = 'Approved';
         paymentDoc.transactionId = successTxn?.cf_payment_id || paymentDoc.transactionId;
+        if (!paymentDoc.receiptId) {
+          paymentDoc.receiptId = `RCP-${Date.now()}`;
+        }
         paymentDoc.verifiedAt = new Date();
         await paymentDoc.save();
         await Invoice.findByIdAndUpdate(paymentDoc.invoiceId, { status: 'Paid' });
