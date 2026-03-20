@@ -11,7 +11,7 @@ export const config = {
   cashfreeAppId: process.env.CASHFREE_APP_ID || '',
   cashfreeSecretKey: process.env.CASHFREE_SECRET_KEY || '',
   cashfreeEnvironment: process.env.CASHFREE_ENVIRONMENT || 'production',
-  corsOrigins: (process.env.CORS_ORIGINS || 'http://localhost:8080,https://vi.vallunex.com')
+  corsOrigins: (process.env.CORS_ORIGINS || 'http://localhost:8080,https://vi.vallunex.com,https://vi.vallunex.com/login')
     .split(',')
     .map(origin => origin.trim())
     .filter(Boolean)

@@ -14,17 +14,23 @@ import projectRoutes from './routes/projects.js';
 const app = express();
 
 // Middleware
+const normalizeOrigin = (origin) => (origin || '').replace(/\/$/, '');
+const allowedOrigins = config.corsOrigins.map(normalizeOrigin);
+
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser requests and explicitly allowed browser origins.
-    if (!origin || config.corsOrigins.includes(origin)) {
+    const normalized = normalizeOrigin(origin);
+    if (!origin || allowedOrigins.includes(normalized)) {
       callback(null, true);
       return;
     }
+    console.warn(`CORS blocked origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
