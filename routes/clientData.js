@@ -13,7 +13,8 @@ router.get('/me', authenticate, async (req, res) => {
     }
 
     const client = await Client.findOne({ userId: req.user.id })
-      .populate('userId', 'name email');
+      .populate('userId', 'name email')
+      .populate('projectIds', 'name');
 
     if (!client) {
       return res.status(404).json({ error: 'Client not found' });

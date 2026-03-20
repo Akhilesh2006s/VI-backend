@@ -15,8 +15,8 @@ const serverConfigSchema = new mongoose.Schema({
   },
   hostingProvider: {
     type: String,
-    enum: ['AmenityForge', 'AWS', 'DigitalOcean', 'GCP', 'Custom'],
-    default: 'AmenityForge'
+    enum: ['Vallunex', 'AmenityForge', 'AWS', 'DigitalOcean', 'GCP', 'Custom'],
+    default: 'Vallunex'
   },
   estimatedCost: {
     type: Number,
@@ -45,7 +45,7 @@ const databaseConfigSchema = new mongoose.Schema({
   },
   region: {
     type: String,
-    default: 'us-east-1'
+    default: ''
   },
   monthlyCost: {
     type: Number,
