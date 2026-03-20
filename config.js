@@ -10,5 +10,9 @@ export const config = {
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
   cashfreeAppId: process.env.CASHFREE_APP_ID || '',
   cashfreeSecretKey: process.env.CASHFREE_SECRET_KEY || '',
-  cashfreeEnvironment: process.env.CASHFREE_ENVIRONMENT || 'production'
+  cashfreeEnvironment: process.env.CASHFREE_ENVIRONMENT || 'production',
+  corsOrigins: (process.env.CORS_ORIGINS || 'http://localhost:8080,https://vi.vallunex.com')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
 };
