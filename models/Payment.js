@@ -43,6 +43,14 @@ const paymentSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  cashfreeOrderId: {
+    type: String,
+    default: ''
+  },
+  cashfreeCfOrderId: {
+    type: String,
+    default: ''
+  },
   createdAt: {
     type: Date,
     default: Date.now
