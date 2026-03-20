@@ -101,17 +101,25 @@ router.post('/', authenticate, requireSuperAdmin, async (req, res) => {
 // Update invoice (super admin only)
 router.put('/:id', authenticate, requireSuperAdmin, async (req, res) => {
   try {
-    const { status, breakdown, total, dueDate } = req.body;
+    const { status, breakdown, total, dueDate, items, extraCost, billingType, projectId } = req.body;
     const invoice = await Invoice.findById(req.params.id);
 
     if (!invoice) {
       return res.status(404).json({ error: 'Invoice not found' });
     }
 
+    if (invoice.status === 'Paid') {
+      return res.status(400).json({ error: 'Paid invoices cannot be edited' });
+    }
+
     if (status) invoice.status = status;
     if (breakdown) invoice.breakdown = { ...invoice.breakdown, ...breakdown };
-    if (total) invoice.total = total;
+    if (total !== undefined) invoice.total = total;
     if (dueDate) invoice.dueDate = new Date(dueDate);
+    if (items !== undefined) invoice.items = items;
+    if (extraCost !== undefined) invoice.extraCost = extraCost;
+    if (billingType) invoice.billingType = billingType;
+    if (projectId !== undefined) invoice.projectId = projectId || null;
 
     await invoice.save();
     await invoice.populate('clientId', 'companyName contactEmail');
@@ -119,6 +127,26 @@ router.put('/:id', authenticate, requireSuperAdmin, async (req, res) => {
     res.json(invoice);
   } catch (error) {
     console.error('Update invoice error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Delete invoice (super admin only)
+router.delete('/:id', authenticate, requireSuperAdmin, async (req, res) => {
+  try {
+    const invoice = await Invoice.findById(req.params.id);
+    if (!invoice) {
+      return res.status(404).json({ error: 'Invoice not found' });
+    }
+
+    if (invoice.status === 'Paid') {
+      return res.status(400).json({ error: 'Paid invoices cannot be deleted' });
+    }
+
+    await Invoice.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Invoice deleted successfully' });
+  } catch (error) {
+    console.error('Delete invoice error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
