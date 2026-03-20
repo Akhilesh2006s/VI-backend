@@ -10,6 +10,7 @@ import paymentRoutes from './routes/payments.js';
 import activityRoutes from './routes/activity.js';
 import clientDataRoutes from './routes/clientData.js';
 import projectRoutes from './routes/projects.js';
+import supportRoutes from './routes/support.js';
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/client', clientDataRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/support', supportRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
