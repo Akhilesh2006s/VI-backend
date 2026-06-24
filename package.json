@@ -8,6 +8,7 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "init-admin": "node scripts/initAdmin.js",
+    "clear-data": "node scripts/clearData.js",
     "update-client-passwords": "node scripts/updateClientPasswords.js"
   },
   "dependencies": {
