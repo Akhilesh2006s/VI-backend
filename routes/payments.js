@@ -307,4 +307,47 @@ router.post('/:id/verify', authenticate, requireSuperAdmin, async (req, res) => 
   }
 });
 
+// Delete payment (super admin only)
+router.delete('/:id', authenticate, requireSuperAdmin, async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.id)
+      .populate('invoiceId', 'invoiceId status')
+      .populate('clientId', 'companyName');
+
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    const invoiceRef = payment.invoiceId;
+    const clientName = payment.clientId?.companyName || 'Deleted Client';
+    const invoiceLabel = invoiceRef?.invoiceId || 'Deleted Invoice';
+
+    if (payment.status === 'Approved' && invoiceRef?._id) {
+      const otherApproved = await Payment.countDocuments({
+        _id: { $ne: payment._id },
+        invoiceId: invoiceRef._id,
+        status: 'Approved',
+      });
+      if (otherApproved === 0 && invoiceRef.status === 'Paid') {
+        await Invoice.findByIdAndUpdate(invoiceRef._id, { status: 'Pending' });
+      }
+    }
+
+    await Payment.findByIdAndDelete(req.params.id);
+
+    const adminUser = await User.findById(req.user.id);
+    await ActivityLog.create({
+      action: 'Payment deleted',
+      user: adminUser?.name || 'Super Admin',
+      target: `${clientName} - ${invoiceLabel}`,
+      type: 'warning',
+    });
+
+    res.json({ message: 'Payment deleted successfully' });
+  } catch (error) {
+    console.error('Delete payment error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 export default router;
